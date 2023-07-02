@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "chmod a+x buildtestimage.sh && ./buildtestimage.sh c3pobot/botbridge"
   },
   "author": "scuba75",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "discord-cross-hosting": "^2.3.2"
+  }
 }
