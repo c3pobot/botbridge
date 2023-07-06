@@ -1,5 +1,5 @@
 const socketServer = require('./socket')
-const HEALTH_PORT = process.env.HEALTH_PORT || 3000
+const PORT = process.env.HEALTH_PORT || 3000
 const express = require('express')
 const compression = require('compression')
 const bodyParser = require('body-parser');
@@ -14,7 +14,7 @@ app.use(compression())
 app.get('/healthz', (req, res)=>{
   res.status(200).json({status: 'ok'})
 })
-const server = app.listen(HEALTH_PORT, ()=>{
+const server = app.listen(PORT, ()=>{
   console.log('bot bridge is listening on '+server.address()?.port)
   socketServer(server)
 })
