@@ -1,5 +1,5 @@
 const socketServer = require('./socket')
-const PORT = process.env.HEALTH_PORT || 3000
+const PORT = process.env.PORT || 3000
 const express = require('express')
 const compression = require('compression')
 const bodyParser = require('body-parser');
