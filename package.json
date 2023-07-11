@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "chmod a+x updategitdependency.sh && ./updategitdependency.sh",
     "build": "chmod a+x buildtestimage.sh && ./buildtestimage.sh c3pobot/botbridge",
     "prod": "chmod a+x buildprodimage.sh && ./buildprodimage.sh c3pobot/botbridge"
   },
@@ -14,6 +15,7 @@
     "body-parser": "^1.20.2",
     "compression": "^1.7.4",
     "express": "^4.18.2",
+    "logger": "github:c3pobot/logger",
     "socket.io": "^4.7.1"
   }
 }

@@ -1,3 +1,4 @@
+const log = require('logger')
 const { Server } = require('socket.io')
 const BOT_TOTAL_SHARDS = +process.env.BOT_TOTAL_SHARDS || 2
 const BOT_TOKEN = process.env.BOT_TOKEN
@@ -13,9 +14,9 @@ const enumShards = ()=>{
       enumShardNum[BOT_NODE_NAME_PREFIX+'-'+i] = +i
     }
     if(Object.values(enumShardNum).length === 0) setTimeout(enumShards, 5000)
-    console.log(JSON.stringify(enumShardNum))
+    log.info(JSON.stringify(enumShardNum))
   }catch(e){
-    console.error(e);
+    log.error(e);
     setTimeout(enumShards, 5000)
   }
 }
@@ -41,7 +42,7 @@ const getShardId = async(obj = {})=>{
   }
 }
 const getRemoteRequest = (cmd, obj = {})=>{
-  if(!remoteSockets[obj.podName] || !remoteSockets[obj.podName]?.connected) throw('Socket Error: connection not available')
+  if(!remoteSockets[obj.podName] || !remoteSockets[obj.podName]?.connected) throw('Socket Error: '+obj.podName+' connection not available')
   return new Promise((resolve, reject)=>{
     try{
       remoteSockets[obj.podName].timeout(SOCKET_EMIT_TIMEOUT).emit('request', cmd, obj, (err, res)=>{
@@ -49,7 +50,7 @@ const getRemoteRequest = (cmd, obj = {})=>{
         resolve(res)
       })
     }catch(e){
-      console.error(e);
+      log.error(e);
       reject(e.message || e)
     }
   })
@@ -66,7 +67,7 @@ const getRemoteRequestAllBots = async(cmd, obj)=>{
     }
     return resArray
   }catch(e){
-    console.error(e);
+    log.error(e);
   }
 }
 const identifySocket = (obj = {}, socket)=>{
@@ -81,10 +82,12 @@ const identifySocket = (obj = {}, socket)=>{
 }
 const processRequest = async(cmd, obj = {}, socket)=>{
   try{
+    log.debug(JSON.stringify(obj))
     if(cmd === 'identify') return await identifySocket(obj, socket)
     if(cmd === 'getBotShardNum') return await getBotShardNum(obj, socket)
     let podName = obj.podName
     if(!podName) podName = await getShardId(obj)
+    log.debug('found '+podName+' for '+obj.sId)
     if(podName === 'all') return await getRemoteRequestAllBots(cmd, obj)
     if(podName){
       obj.podName = podName
@@ -98,19 +101,22 @@ enumShards()
 module.exports = (server)=>{
   try{
     io = new Server(server, {maxHttpBufferSize: 1e8, cors: { origin: ['*']}})
-    console.log('bot bridge socket server is listening on port '+server.address()?.port)
+    log.info('bot bridge socket server is listening on port '+server.address()?.port)
     io.on('connection', (socket)=>{
+      socket.on('connect', ()=>{
+        log.debug(socket.id+' is connected to bot bridge')
+      })
       socket.on('request', async(cmd, obj = {}, callback)=>{
         try{
           let res = await processRequest(cmd, obj, socket)
           if(callback) callback(res)
         }catch(e){
-          console.log(e.message || e)
+          log.log(e.message || e)
           if(callback) callback()
         }
       })
     })
   }catch(e){
-    console.log(e)
+    log.error(e)
   }
 }
