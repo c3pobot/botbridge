@@ -1,7 +1,7 @@
 const log = require('logger')
 let logLevel = process.env.LOG_LEVEL || log.Level.INFO;
 log.setLevel(logLevel);
-const socketServer = require('./socket')
+const handleRequest = require('./handleRequest')
 const PORT = process.env.PORT || 3000
 const express = require('express')
 const compression = require('compression')
@@ -17,7 +17,9 @@ app.use(compression())
 app.get('/healthz', (req, res)=>{
   res.status(200).json({status: 'ok'})
 })
+app.post('/cmd', (req, res)=>{
+  handleRequest(req, res)
+})
 const server = app.listen(PORT, ()=>{
   log.info('bot bridge is listening on '+server.address()?.port)
-  socketServer(server)
 })
