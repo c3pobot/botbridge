@@ -28,6 +28,13 @@ Cmds.getBotShardNum = ( obj = {} )=>{
     throw(e)
   }
 }
+Cmds.getNumShards = ( obj = {} )=>{
+  try{
+    return { totalShards: BOT_TOTAL_SHARDS }
+  }catch(e){
+    throw(e)
+  }
+}
 const getRemoteRequest = async(obj = {})=>{
   try{
     if(!enumShardNum[obj.podName]?.url) throw(obj.podName+' connection not available')
